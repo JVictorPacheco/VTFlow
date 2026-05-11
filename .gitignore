@@ -17,6 +17,9 @@ dist/
 .DS_Store
 Thumbs.db
 
+# ── Docs de planejamento ──────────────────────────
+.specs/
+
 # ── Secrets ───────────────────────────────────────
 appsettings.*.json
 !appsettings.json
