@@ -1,0 +1,23 @@
+# ── .NET ──────────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.db
+*.db-shm
+*.db-wal
+
+# ── Angular ───────────────────────────────────────
+node_modules/
+dist/
+.angular/
+
+# ── Sistema ───────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Secrets ───────────────────────────────────────
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
