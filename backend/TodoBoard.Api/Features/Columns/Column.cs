@@ -11,4 +11,5 @@ public class Column
     public int Order { get; set; }
     public int BoardId { get; set; }
     public Board Board { get; set; } = null!;
+    public int? UserId { get; set; }
 }

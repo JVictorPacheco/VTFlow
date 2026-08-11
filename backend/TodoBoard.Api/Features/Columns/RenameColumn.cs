@@ -7,9 +7,11 @@ namespace TodoBoard.Api.Features.Columns;
 public static class RenameColumn
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapPut("/columns/{id}", async (int id, ColumnRequest request, AppDbContext db) =>
+        app.MapPut("/columns/{id}", async (int id, ColumnRequest request, AppDbContext db, HttpContext context) =>
         {
-            var column = await db.Columns.FindAsync(id);
+            var userId = UserContext.GetUserId(context);
+
+            var column = await db.Columns.FirstOrDefaultAsync(c => c.Id == id && (c.UserId == null || c.UserId == userId));
             if (column is null) return Results.NotFound(new { error = "Column not found" });
 
             if (string.IsNullOrWhiteSpace(request.Name))

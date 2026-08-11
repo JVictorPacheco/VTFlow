@@ -12,9 +12,11 @@ public static class ToggleSubtask
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapPatch("/cards/{cardId}/subtasks/{id}/toggle", async (int cardId, int id, ToggleRequest request, AppDbContext db) =>
+        app.MapPatch("/cards/{cardId}/subtasks/{id}/toggle", async (int cardId, int id, ToggleRequest request, AppDbContext db, HttpContext context) =>
         {
-            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == id && s.CardId == cardId);
+            var userId = UserContext.GetUserId(context);
+
+            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == id && s.CardId == cardId && (s.Card.UserId == null || s.Card.UserId == userId));
             if (subtask is null) return Results.NotFound(new { error = "Subtask not found" });
 
             subtask.IsCompleted = request.IsCompleted;

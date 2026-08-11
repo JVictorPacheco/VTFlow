@@ -13,9 +13,11 @@ public static class CreateSubtask
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapPost("/cards/{cardId}/subtasks", async (int cardId, SubtaskRequest request, AppDbContext db) =>
+        app.MapPost("/cards/{cardId}/subtasks", async (int cardId, SubtaskRequest request, AppDbContext db, HttpContext context) =>
         {
-            if (!await db.Cards.AnyAsync(c => c.Id == cardId))
+            var userId = UserContext.GetUserId(context);
+
+            if (!await db.Cards.AnyAsync(c => c.Id == cardId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Card not found" });
 
             if (string.IsNullOrWhiteSpace(request.Title))

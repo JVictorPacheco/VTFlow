@@ -10,9 +10,11 @@ public static class DeleteComment
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapDelete("/cards/{cardId}/comments/{id}", async (int cardId, int id, AppDbContext db) =>
+        app.MapDelete("/cards/{cardId}/comments/{id}", async (int cardId, int id, AppDbContext db, HttpContext context) =>
         {
-            var comment = await db.Comments.FirstOrDefaultAsync(c => c.Id == id && c.CardId == cardId);
+            var userId = UserContext.GetUserId(context);
+
+            var comment = await db.Comments.FirstOrDefaultAsync(c => c.Id == id && c.CardId == cardId && (c.Card.UserId == null || c.Card.UserId == userId));
             if (comment is null) return Results.NotFound(new { error = "Comment not found" });
 
             LogActivity(db, cardId, ActivityType.CommentDeleted, "Comentário removido.");

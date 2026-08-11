@@ -7,9 +7,11 @@ namespace TodoBoard.Api.Features.Cards;
 public static class GetSubtasks
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/cards/{cardId}/subtasks", async (int cardId, AppDbContext db) =>
+        app.MapGet("/cards/{cardId}/subtasks", async (int cardId, AppDbContext db, HttpContext context) =>
         {
-            if (!await db.Cards.AnyAsync(c => c.Id == cardId))
+            var userId = UserContext.GetUserId(context);
+
+            if (!await db.Cards.AnyAsync(c => c.Id == cardId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Card not found" });
 
             var subtasks = await db.Subtasks.Where(s => s.CardId == cardId).OrderBy(s => s.Id).ToListAsync();

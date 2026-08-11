@@ -23,12 +23,14 @@ public static class CreateCard
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapPost("/cards", async (CardRequest request, AppDbContext db) =>
+        app.MapPost("/cards", async (CardRequest request, AppDbContext db, HttpContext context) =>
         {
+            var userId = UserContext.GetUserId(context);
+
             if (string.IsNullOrWhiteSpace(request.Title))
                 return Results.BadRequest(new { error = "Title is required" });
 
-            if (!await db.Columns.AnyAsync(c => c.Id == request.ColumnId))
+            if (!await db.Columns.AnyAsync(c => c.Id == request.ColumnId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Column not found" });
 
             var card = new Card
@@ -38,10 +40,11 @@ public static class CreateCard
                 DueDate = request.DueDate,
                 Priority = request.Priority,
                 ColumnId = request.ColumnId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UserId = userId
             };
 
-            var maxOrder = await db.Cards.Where(c => c.ColumnId == request.ColumnId).Select(c => (int?)c.Order).MaxAsync() ?? -1;
+            var maxOrder = await db.Cards.Where(c => c.ColumnId == request.ColumnId && (c.UserId == null || c.UserId == userId)).Select(c => (int?)c.Order).MaxAsync() ?? -1;
             card.Order = maxOrder + 1;
 
             db.Cards.Add(card);
