@@ -8,5 +8,6 @@ public class Board
     public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int? UserId { get; set; }
     public ICollection<Column> Columns { get; set; } = [];
 }

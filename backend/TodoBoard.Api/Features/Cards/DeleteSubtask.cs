@@ -10,9 +10,11 @@ public static class DeleteSubtask
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapDelete("/cards/{cardId}/subtasks/{id}", async (int cardId, int id, AppDbContext db) =>
+        app.MapDelete("/cards/{cardId}/subtasks/{id}", async (int cardId, int id, AppDbContext db, HttpContext context) =>
         {
-            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == id && s.CardId == cardId);
+            var userId = UserContext.GetUserId(context);
+
+            var subtask = await db.Subtasks.FirstOrDefaultAsync(s => s.Id == id && s.CardId == cardId && (s.Card.UserId == null || s.Card.UserId == userId));
             if (subtask is null) return Results.NotFound(new { error = "Subtask not found" });
 
             LogActivity(db, cardId, ActivityType.SubtaskDeleted, $"Subtarefa \"{subtask.Title}\" removida.");

@@ -17,18 +17,20 @@ public static class UpdateCard
         db.CardActivities.Add(new CardActivity { CardId = cardId, Type = type, Description = description, CreatedAt = DateTime.UtcNow });
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapPut("/cards/{id}", async (int id, CardRequest request, AppDbContext db) =>
+        app.MapPut("/cards/{id}", async (int id, CardRequest request, AppDbContext db, HttpContext context) =>
         {
+            var userId = UserContext.GetUserId(context);
+
             var card = await db.Cards
                 .Include(c => c.CardLabels).ThenInclude(cl => cl.Label)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id && (c.UserId == null || c.UserId == userId));
 
             if (card is null) return Results.NotFound(new { error = "Card not found" });
 
             if (string.IsNullOrWhiteSpace(request.Title))
                 return Results.BadRequest(new { error = "Title is required" });
 
-            if (!await db.Columns.AnyAsync(c => c.Id == request.ColumnId))
+            if (!await db.Columns.AnyAsync(c => c.Id == request.ColumnId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Column not found" });
 
             if (card.Priority != request.Priority)

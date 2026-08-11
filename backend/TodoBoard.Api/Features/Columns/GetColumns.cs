@@ -7,16 +7,18 @@ namespace TodoBoard.Api.Features.Columns;
 public static class GetColumns
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/columns", async (int? boardId, AppDbContext db) =>
+        app.MapGet("/columns", async (int? boardId, AppDbContext db, HttpContext context) =>
         {
+            var userId = UserContext.GetUserId(context);
+
             if (!boardId.HasValue)
                 return Results.BadRequest(new { error = "boardId is required" });
 
-            if (!await db.Boards.AnyAsync(b => b.Id == boardId.Value))
+            if (!await db.Boards.AnyAsync(b => b.Id == boardId.Value && (b.UserId == null || b.UserId == userId)))
                 return Results.NotFound(new { error = "Board not found" });
 
             var columns = await db.Columns
-                .Where(c => c.BoardId == boardId.Value)
+                .Where(c => c.BoardId == boardId.Value && (c.UserId == null || c.UserId == userId))
                 .OrderBy(c => c.Order)
                 .ToListAsync();
 

@@ -14,11 +14,14 @@ public static class GetCards
     );
 
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/cards", async (int? columnId, AppDbContext db) =>
+        app.MapGet("/cards", async (int? columnId, AppDbContext db, HttpContext context) =>
         {
+            var userId = UserContext.GetUserId(context);
+
             var query = db.Cards
                 .Include(c => c.CardLabels).ThenInclude(cl => cl.Label)
                 .Include(c => c.Subtasks)
+                .Where(c => c.UserId == null || c.UserId == userId)
                 .AsQueryable();
 
             if (columnId.HasValue)

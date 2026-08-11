@@ -7,9 +7,11 @@ namespace TodoBoard.Api.Features.Cards;
 public static class GetComments
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/cards/{cardId}/comments", async (int cardId, AppDbContext db) =>
+        app.MapGet("/cards/{cardId}/comments", async (int cardId, AppDbContext db, HttpContext context) =>
         {
-            if (!await db.Cards.AnyAsync(c => c.Id == cardId))
+            var userId = UserContext.GetUserId(context);
+
+            if (!await db.Cards.AnyAsync(c => c.Id == cardId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Card not found" });
 
             var comments = await db.Comments.Where(c => c.CardId == cardId).OrderBy(c => c.CreatedAt).ToListAsync();

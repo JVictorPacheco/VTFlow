@@ -7,9 +7,11 @@ namespace TodoBoard.Api.Features.Boards;
 public static class GetBoardById
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/boards/{id}", async (int id, AppDbContext db) =>
+        app.MapGet("/boards/{id}", async (int id, AppDbContext db, HttpContext context) =>
         {
-            var board = await db.Boards.FindAsync(id);
+            var userId = UserContext.GetUserId(context);
+
+            var board = await db.Boards.FirstOrDefaultAsync(b => b.Id == id && (b.UserId == null || b.UserId == userId));
             if (board is null) return Results.NotFound(new { error = "Board not found" });
 
             return Results.Ok(new BoardResponse(board.Id, board.Name, board.Description, board.CreatedAt));

@@ -28,6 +28,16 @@ builder.Services.ConfigureHttpJsonOptions(opts =>
 
 builder.Services.AddScoped<AuthService>();
 
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey))
+{
+    jwtKey = Environment.GetEnvironmentVariable("DOTNET_JWT_KEY");
+}
+if (string.IsNullOrEmpty(jwtKey) && builder.Environment.IsDevelopment())
+{
+    jwtKey = "dev-secret-key-for-local-development-only";
+}
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -39,13 +49,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+                Encoding.UTF8.GetBytes(jwtKey!))
         };
     });
 
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -63,34 +75,28 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Health
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" })).AllowAnonymous();
 
-// Auth
 Register.Map(app);
 Login.Map(app);
 
-// Labels
 CreateLabel.Map(app);
 GetLabels.Map(app);
 UpdateLabel.Map(app);
 DeleteLabel.Map(app);
 
-// Boards
 CreateBoard.Map(app);
 GetBoards.Map(app);
 GetBoardById.Map(app);
 UpdateBoard.Map(app);
 DeleteBoard.Map(app);
 
-// Columns
 CreateColumn.Map(app);
 GetColumns.Map(app);
 RenameColumn.Map(app);
 ReorderColumn.Map(app);
 DeleteColumn.Map(app);
 
-// Cards
 CreateCard.Map(app);
 GetCards.Map(app);
 UpdateCard.Map(app);
@@ -98,20 +104,17 @@ MoveCard.Map(app);
 ReorderCard.Map(app);
 DeleteCard.Map(app);
 
-// Subtasks
 CreateSubtask.Map(app);
 GetSubtasks.Map(app);
 ToggleSubtask.Map(app);
 RenameSubtask.Map(app);
 DeleteSubtask.Map(app);
 
-// Comments
 CreateComment.Map(app);
 GetComments.Map(app);
 UpdateComment.Map(app);
 DeleteComment.Map(app);
 
-// Card Activities
 GetCardActivities.Map(app);
 
 app.Run();

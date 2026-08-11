@@ -12,6 +12,7 @@ public class Card
     public int ColumnId { get; set; }
     public int Order { get; set; } = 0;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public int? UserId { get; set; }
     public ICollection<CardLabel> CardLabels { get; set; } = [];
     public ICollection<Subtask> Subtasks { get; set; } = [];
     public ICollection<Comment> Comments { get; set; } = [];

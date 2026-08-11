@@ -9,9 +9,11 @@ public record CardActivityResponse(int Id, string Type, string Description, Date
 public static class GetCardActivities
 {
     public static void Map(IEndpointRouteBuilder app) =>
-        app.MapGet("/cards/{cardId}/activities", async (int cardId, AppDbContext db) =>
+        app.MapGet("/cards/{cardId}/activities", async (int cardId, AppDbContext db, HttpContext context) =>
         {
-            if (!await db.Cards.AnyAsync(c => c.Id == cardId))
+            var userId = UserContext.GetUserId(context);
+
+            if (!await db.Cards.AnyAsync(c => c.Id == cardId && (c.UserId == null || c.UserId == userId)))
                 return Results.NotFound(new { error = "Card not found" });
 
             var activities = await db.CardActivities.Where(a => a.CardId == cardId).OrderBy(a => a.CreatedAt).ToListAsync();
