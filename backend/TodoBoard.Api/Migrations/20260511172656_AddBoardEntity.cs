@@ -1,4 +1,4 @@
-Ôªøusing System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -27,11 +27,11 @@ namespace TodoBoard.Api.Migrations
                     table.PrimaryKey("PK_Boards", x => x.Id);
                 });
 
-            // 2. Inserir board padr√£o para receber as colunas existentes
+            // 2. Inserir board padr„o para receber as colunas existentes
             migrationBuilder.Sql(
                 "INSERT INTO Boards (Name, Description, CreatedAt) VALUES ('Meu Board', NULL, datetime('now'))");
 
-            // 3. Adicionar coluna BoardId com default 0 (tempor√°rio)
+            // 3. Adicionar coluna BoardId com default 0 (tempor·rio)
             migrationBuilder.AddColumn<int>(
                 name: "BoardId",
                 table: "Columns",
@@ -39,7 +39,7 @@ namespace TodoBoard.Api.Migrations
                 nullable: false,
                 defaultValue: 0);
 
-            // 4. Atribuir todas as colunas existentes ao board padr√£o rec√©m-criado
+            // 4. Atribuir todas as colunas existentes ao board padr„o recÈm-criado
             migrationBuilder.Sql(
                 "UPDATE Columns SET BoardId = (SELECT Id FROM Boards LIMIT 1)");
 

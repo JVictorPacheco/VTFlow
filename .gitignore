@@ -16,6 +16,7 @@ dist/
 # ── Sistema ───────────────────────────────────────
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # ── Docs de planejamento ──────────────────────────
 .specs/
