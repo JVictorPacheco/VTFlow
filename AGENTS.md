@@ -1,9 +1,10 @@
 # AGENTS.md — ToDo-Board
 
 ## Stack
-- Backend: .NET 9, ASP.NET Core Web API, EF Core 9, SQLite
+- Backend: .NET 9, ASP.NET Core Web API, EF Core 9, PostgreSQL (Supabase via Npgsql)
 - Frontend: Angular 21, Tailwind CSS 3, TypeScript 5.9
-- Auth: JWT Bearer + BCrypt
+- Auth: JWT Bearer + BCrypt (JwtService with UserSecrets → Env → dev-fallback)
+- Database: Supabase PostgreSQL (connection pooler: aws-0-us-west-2.pooler.supabase.com:5432)
 
 ## Architectural Pattern
 - **Vertical Slice Architecture** in `Features/` folder

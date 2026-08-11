@@ -36,6 +36,9 @@ import { AuthService } from '../../../core/services/auth.service';
           @if (errorMessage()) {
             <p class="text-red-500 text-sm text-center">{{ errorMessage() }}</p>
           }
+          @if (successMessage()) {
+            <p class="text-green-600 dark:text-green-400 text-sm text-center font-medium">{{ successMessage() }}</p>
+          }
 
           <button type="submit" [disabled]="form.invalid || loading()"
             class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-lg transition-colors">
@@ -61,14 +64,21 @@ export class RegisterComponent {
 
   loading = signal(false);
   errorMessage = signal('');
+  successMessage = signal('');
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading.set(true);
     this.errorMessage.set('');
+    this.successMessage.set('');
 
     const { username, password } = this.form.value;
     this.auth.register(username!, password!).subscribe({
+      next: () => {
+        this.successMessage.set('Conta criada com sucesso! Redirecionando...');
+        this.loading.set(false);
+        setTimeout(() => this.auth.navigateToLogin(), 1500);
+      },
       error: (err) => {
         const msg = err.status === 409 ? 'Nome de usuário já em uso' : 'Erro ao criar conta';
         this.errorMessage.set(msg);

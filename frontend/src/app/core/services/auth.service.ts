@@ -24,9 +24,11 @@ export class AuthService {
   }
 
   register(username: string, password: string): Observable<void> {
-    return this.http.post<void>(`${environment.apiUrl}/auth/register`, { username, password }).pipe(
-      tap(() => this.router.navigate(['/login']))
-    );
+    return this.http.post<void>(`${environment.apiUrl}/auth/register`, { username, password });
+  }
+
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
   }
 
   logout(): void {

@@ -1,8 +1,6 @@
-using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using TodoBoard.Api.Features.Auth;
 using TodoBoard.Api.Features.Boards;
 using TodoBoard.Api.Features.Cards;
@@ -15,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
@@ -26,31 +24,14 @@ builder.Services.AddCors(options =>
 builder.Services.ConfigureHttpJsonOptions(opts =>
     opts.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+var jwtService = new JwtService(builder.Configuration, builder.Environment);
+builder.Services.AddSingleton(jwtService);
 builder.Services.AddScoped<AuthService>();
-
-var jwtKey = builder.Configuration["Jwt:Key"];
-if (string.IsNullOrEmpty(jwtKey))
-{
-    jwtKey = Environment.GetEnvironmentVariable("DOTNET_JWT_KEY");
-}
-if (string.IsNullOrEmpty(jwtKey) && builder.Environment.IsDevelopment())
-{
-    jwtKey = "dev-secret-key-for-local-development-only";
-}
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey!))
-        };
+        options.TokenValidationParameters = jwtService.CreateValidationParameters();
     });
 
 builder.Services.AddAuthorization();
