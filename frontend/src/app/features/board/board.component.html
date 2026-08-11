@@ -1,0 +1,199 @@
+<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+  <!-- Toast de erro -->
+  @if (toastMessage()) {
+    <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-lg">
+      {{ toastMessage() }}
+    </div>
+  }
+
+  <!-- Header do board -->
+  <div class="px-4 py-3 flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+    <div class="flex items-center gap-3">
+      <a href="/boards" class="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">← Boards</a>
+      <h1 class="text-xl font-bold text-gray-900 dark:text-white">Board</h1>
+    </div>
+    <div class="flex flex-wrap items-center gap-3">
+      <a href="/labels" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Etiquetas</a>
+      <a [href]="'/columns?boardId=' + store.boardId()" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Colunas</a>
+      <button (click)="themeService.toggleTheme()"
+        class="px-3 py-1.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+        {{ themeService.isDark() ? 'Light' : 'Dark' }}
+      </button>
+      <button (click)="auth.logout()"
+        class="text-sm text-red-500 hover:text-red-700 dark:text-red-400 font-medium">
+        Sair
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="px-4 py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center gap-3 flex-wrap">
+    <div class="flex items-center gap-2">
+      <input type="text" placeholder="Buscar card..." (input)="onSearch($event)"
+        [value]="searchQuery()"
+        class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1"
+        style="min-width:160px" />
+    </div>
+    @if (store.labels().length > 0) {
+      <div class="flex items-center gap-2">
+        <label class="text-sm text-gray-600 dark:text-gray-400 font-medium">Etiqueta:</label>
+        <select (change)="onFilterLabel($event)" style="min-width:120px"
+          class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-2 py-1">
+          <option value="">Todas</option>
+          @for (label of store.labels(); track label.id) {
+            <option [value]="label.id">{{ label.name }}</option>
+          }
+        </select>
+      </div>
+    }
+    <div class="flex items-center gap-2">
+      <label class="text-sm text-gray-600 dark:text-gray-400 font-medium">Prioridade:</label>
+      <select (change)="onFilterPriority($event)" style="min-width:100px"
+        class="text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-2 py-1">
+        <option value="">Todas</option>
+        <option value="Low">Baixa</option>
+        <option value="Medium">Média</option>
+        <option value="High">Alta</option>
+      </select>
+    </div>
+    @if (filterLabelId() !== null || filterPriority() !== null || searchQuery()) {
+      <button (click)="clearFilters()" class="text-sm text-red-500 hover:text-red-700 dark:text-red-400 font-medium underline">
+        Limpar filtros
+      </button>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (store.loading()) {
+    <div class="flex-1 flex items-center justify-center min-h-[calc(100vh-120px)]">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Carregando board...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Colunas com CDK Drag & Drop -->
+  @if (!store.loading()) {
+    <div class="flex gap-4 p-6 overflow-x-auto min-h-[calc(100vh-65px)]">
+      @for (col of store.sortedColumns(); track col.id) {
+        <div class="flex-shrink-0 w-72 bg-white dark:bg-gray-800 rounded-xl shadow flex flex-col">
+          <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+            <h2 class="font-semibold text-gray-800 dark:text-gray-100 text-sm">{{ col.name }}</h2>
+            <span class="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 rounded-full px-2 py-0.5">
+              {{ cardsForColumn(col.id).length }}
+            </span>
+          </div>
+
+          <div
+            cdkDropList
+            [cdkDropListData]="col.id"
+            [cdkDropListConnectedTo]="connectedLists()"
+            (cdkDropListDropped)="onDropList($event)"
+            class="flex-1 p-3 space-y-2 overflow-y-auto min-h-[60px]">
+            @for (card of cardsForColumn(col.id); track card.id) {
+              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-600 cursor-pointer"
+                cdkDrag
+                [cdkDragData]="card.id"
+                (click)="openDetail(card)">
+                <div class="flex items-start gap-2 mb-2">
+                  <span class="mt-0.5 flex-shrink-0 w-2 h-2 rounded-full" [class]="priorityDot(card.priority)"></span>
+                  <span class="text-sm font-medium text-gray-900 dark:text-white leading-tight">{{ card.title }}</span>
+                </div>
+                @if (card.description) {
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{{ card.description }}</p>
+                }
+                @if (card.dueDate) {
+                  <p class="text-xs mb-2" [class]="dueDateClass(card.dueDate)">&#x1F4C5; {{ formatDate(card.dueDate) }}</p>
+                }
+                @if (card.labels.length > 0) {
+                  <div class="flex flex-wrap gap-1 mb-2">
+                    @for (label of card.labels; track label.id) {
+                      <span class="text-xs px-2 py-0.5 rounded-full text-white font-medium"
+                        [style.background-color]="label.color">{{ label.name }}</span>
+                    }
+                  </div>
+                }
+                <div class="flex items-center gap-3 mt-2 pt-2 border-t border-gray-100 dark:border-gray-600">
+                  @if (card.subtasks.length > 0) {
+                    <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                      &#x25A3; {{ card.subtasks.filter(s => s.isCompleted).length }}/{{ card.subtasks.length }}
+                    </span>
+                  }
+                  @if (card.comments.length > 0) {
+                    <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+                      &#x1F4AC; {{ card.comments.length }}
+                    </span>
+                  }
+                  <span class="ml-auto text-xs text-gray-300 dark:text-gray-600">clique para abrir</span>
+                </div>
+              </div>
+            }
+            @if (cardsForColumn(col.id).length === 0) {
+              <p class="text-xs text-gray-400 dark:text-gray-500 text-center py-4">Nenhum card</p>
+            }
+          </div>
+
+          <div class="p-3 border-t border-gray-100 dark:border-gray-700">
+            <button (click)="openCreate(col.id)"
+              class="w-full text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 py-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-left px-2">
+              + Adicionar card
+            </button>
+          </div>
+        </div>
+      }
+      @if (store.sortedColumns().length === 0) {
+        <div class="flex-1 flex items-center justify-center">
+          <p class="text-gray-400 dark:text-gray-500 text-sm">
+            Nenhuma coluna encontrada.
+            <a href="/columns" class="text-blue-500 hover:underline">Criar colunas</a>
+          </p>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Modal CardForm -->
+@if (showForm()) {
+  <app-card-form
+    [card]="editingCard()"
+    [columns]="store.columns()"
+    [labels]="store.labels()"
+    [defaultColumnId]="formColumnId()"
+    (saved)="onSaved($event)"
+    (cancelled)="closeForm()"
+  />
+}
+
+<!-- Modal CardDetail -->
+@if (selectedCard()) {
+  <app-card-detail
+    [card]="selectedCard()!"
+    [columns]="store.sortedColumns()"
+    (closed)="closeDetail()"
+    (edited)="onEditFromDetail($event)"
+    (deleted)="closeDetail(); onDelete(selectedCard()!)"
+    (moved)="onMoveFromDetail($event)"
+    (cardUpdated)="onCardUpdated($event)"
+  />
+}
+
+<!-- Modal de confirmação -->
+@if (confirmModal()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" (click)="closeConfirm()">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-6" (click)="$event.stopPropagation()">
+      <p class="text-gray-800 dark:text-gray-100 text-sm font-medium mb-6">{{ confirmModal()!.message }}</p>
+      <div class="flex justify-end gap-3">
+        <button (click)="closeConfirm()"
+          class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          Cancelar
+        </button>
+        <button (click)="executeConfirm()"
+          class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+          Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using TodoBoard.Api.Features.Cards;
+using TodoBoard.Api.Shared;
+
+namespace TodoBoard.Api.Features.Cards;
+
+public record CardActivityResponse(int Id, string Type, string Description, DateTime CreatedAt, int CardId);
+
+public static class GetCardActivities
+{
+    public static void Map(IEndpointRouteBuilder app) =>
+        app.MapGet("/cards/{cardId}/activities", async (int cardId, AppDbContext db) =>
+        {
+            if (!await db.Cards.AnyAsync(c => c.Id == cardId))
+                return Results.NotFound(new { error = "Card not found" });
+
+            var activities = await db.CardActivities.Where(a => a.CardId == cardId).OrderBy(a => a.CreatedAt).ToListAsync();
+            return Results.Ok(activities.Select(a => new CardActivityResponse(a.Id, a.Type.ToString(), a.Description, a.CreatedAt, a.CardId)));
+        }).RequireAuthorization();
+}
