@@ -11,7 +11,7 @@ created: 2026-08-10
 
 ## Visão Arquitetural
 
-O ToDo-Board segue uma arquitetura **SPA + API RESTful** clássica de dois tiers:
+O VTFlow segue uma arquitetura **SPA + API RESTful** clássica de dois tiers:
 
 ```
 ┌──────────────────────────┐     HTTP/JSON      ┌──────────────────────────┐
@@ -26,7 +26,7 @@ O ToDo-Board segue uma arquitetura **SPA + API RESTful** clássica de dois tiers
                                                            │
                                                     ┌──────▼──────┐
                                                     │   SQLite    │
-                                                    │ todo-board  │
+                                                    │ VTFlow  │
                                                     │    .db      │
                                                     └─────────────┘
 ```
@@ -60,7 +60,7 @@ O ToDo-Board segue uma arquitetura **SPA + API RESTful** clássica de dois tiers
 ## Convenções Técnicas
 
 ### Backend
-- **Namespace**: `TodoBoard.Api.{Camada}` (Controllers, Models, Services, Data)
+- **Namespace**: `VTFlow.Api.{Camada}` (Controllers, Models, Services, Data)
 - **Registros de Request/Response**: `record` types no topo de cada controller
 - **Rotas**: `[Route("recurso")]` no controller, verbos HTTP explícitos nos métodos
 - **Status Codes**: 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 404 Not Found, 409 Conflict
@@ -161,7 +161,7 @@ O ToDo-Board segue uma arquitetura **SPA + API RESTful** clássica de dois tiers
 
 ### Risco 1: Chave JWT hardcoded
 **Arquivo**: `appsettings.json:11`
-**Descrição**: A chave secreta JWT (`"TodoBoardSuperSecretKey2024!@#$%^&*()"`) está em texto plano no arquivo de configuração versionado.
+**Descrição**: A chave secreta JWT (`"VTFlowSuperSecretKey2024!@#$%^&*()"`) está em texto plano no arquivo de configuração versionado.
 **Impacto**: Qualquer pessoa com acesso ao repositório pode gerar tokens JWT válidos.
 **Recomendação**: Usar variáveis de ambiente ou User Secrets para a chave JWT.
 

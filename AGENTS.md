@@ -1,4 +1,4 @@
-# AGENTS.md — ToDo-Board
+# AGENTS.md — VTFlow
 
 ## Stack
 - Backend: .NET 9, ASP.NET Core Web API, EF Core 9, PostgreSQL (Supabase via Npgsql)
@@ -25,6 +25,12 @@
 - Specs in `.specs/` (gitignored) guide implementation before code
 - See `docs/` for architecture docs, roadmap, and GitFlow
 - Template: `docs/Spec Template.md`
+
+## Testing
+- Backend: `dotnet test` em `backend/VTFlow.Api.Tests` (xUnit + WebApplicationFactory/InMemory)
+- Frontend: `npx ng test --watch=false` em `frontend` (Vitest)
+- Backend usa EF Core InMemory nos testes; `Migrate()` só roda quando `db.Database.IsRelational()`
+- Ao rodar testes, o backend `dotnet run` deve estar parado (o .exe fica travado pelo processo)
 
 ## GitFlow
 - `main` = production, `develop` = integration

@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "todo-board-app": {
+    "vtflow-app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -57,10 +57,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "todo-board-app:build:production"
+              "buildTarget": "vtflow-app:build:production"
             },
             "development": {
-              "buildTarget": "todo-board-app:build:development"
+              "buildTarget": "vtflow-app:build:development"
             }
           },
           "defaultConfiguration": "development"

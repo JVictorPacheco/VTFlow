@@ -26,32 +26,47 @@ Documento gerado após bateria de testes na API e revisão de código. Status: 1
 
 ---
 
-## Pendências Identificadas
+## Pendências Resolvidas
 
-### Segurança e Infra (Milestone 1)
+### Segurança e Infra (Milestone 1) — concluído
 
-| # | Pendência | Prioridade | Esforço |
-|---|---|---|---|
-| P1 | `Users.Username` sem índice único — permite duplicatas | Crítica | P |
-| P2 | `UserId` em Boards/Columns/Cards sem FK para Users | Alta | P |
-| P3 | CORS `AllowAll` em produção — restringir para origens específicas | Alta | P |
-| P4 | Rate limiting nos endpoints `/auth/*` — sem proteção contra brute force | Média | P |
-| P5 | Chave JWT no `appsettings.json` como `CHANGE_ME` (resolvido via UserSecrets, mas fallback frágil) | Média | P |
+| # | Pendência | Correção |
+|---|---|---|
+| P1 | `Users.Username` sem índice único | Índice único `IX_Users_Username` (migration `AddUserRelations`) |
+| P2 | `UserId` sem FK para Users | FKs com `SetNull` em Boards/Columns/Cards |
+| P3 | CORS `AllowAll` em produção | Política Dev/Production separada por config |
+| P4 | Sem rate limiting no `/auth/*` | 10 req/min via `AddFixedWindowLimiter` |
+| P5 | Chave JWT fallback frágil | Mantido UserSecrets → Env → dev-fallback |
+
+### Qualidade de Código (Milestone 2) — concluído (P6–P8)
+
+| # | Pendência | Correção |
+|---|---|---|
+| P6 | Zero testes backend | Projeto `VTFlow.Api.Tests` (xUnit) — AuthService + JwtService |
+| P7 | Frontend com poucos testes | Adicionados `board.store.spec.ts` e `card.service.spec.ts`; corrigido `auth.service.spec.ts` |
+| P8 | Sem testes de integração | `WebApplicationFactory` + InMemory — fluxo completo registrar→login→board→card→mover |
+
+### UX (Milestone 5) — parcial
+
+| # | Pendência | Correção |
+|---|---|---|
+| P10 | Ordem local após move | Ordem calculada localmente no drop, com rollback |
+| P14 | Modal sem scroll | `max-h-[90vh] overflow-y-auto` no form |
+
+---
+
+## Pendências Restantes
 
 ### Qualidade de Código (Milestone 2)
 
 | # | Pendência | Prioridade | Esforço |
 |---|---|---|---|
-| P6 | Zero testes no backend (xUnit/NUnit) | Crítica | G |
-| P7 | Frontend: apenas 4 arquivos de teste (auth apenas) | Alta | G |
-| P8 | Sem testes de integração ou E2E | Alta | G |
 | P9 | Sem CI/CD (GitHub Actions) | Média | M |
 
 ### Funcionalidades (Milestone 3)
 
 | # | Pendência | Prioridade | Esforço |
 |---|---|---|---|
-| P10 | Drag-and-drop não atualiza ordem local após move (depende do refresh do server) | Média | P |
 | P11 | Filtros e busca não testados na UI — verificar se funcionam corretamente | Média | M |
 | P12 | `SubtaskDto` vs `SubtaskResponse` — duplicação de tipos, unificar | Baixa | P |
 | P13 | Comentários não vêm no `GetCards` (só no `GetComments`), forçando fetch extra | Baixa | M |
@@ -60,7 +75,6 @@ Documento gerado após bateria de testes na API e revisão de código. Status: 1
 
 | # | Pendência | Prioridade | Esforço |
 |---|---|---|---|
-| P14 | Modal de detalhe do card: overflow de conteúdo sem scroll adequado | Média | P |
 | P15 | "Mover para..." dropdown no detalhe: sem feedback visual de sucesso após mover | Baixa | P |
 | P16 | Sem indicador de carregamento ao criar/editar card (só texto "Salvando...") | Baixa | P |
 

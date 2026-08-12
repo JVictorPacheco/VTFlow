@@ -1,4 +1,4 @@
-# ToDo-Board
+# VTFlow
 
 > Kanban Board com Angular 21 + .NET 9 + SQLite
 
@@ -19,9 +19,9 @@ Gerenciador de tarefas estilo Kanban com colunas personalizáveis, cards, subtar
 ## Estrutura
 
 ```
-ToDo-Board/
+VTFlow/
 ├── backend/                  # API .NET 9
-│   └── TodoBoard.Api/
+│   └── VTFlow.Api/
 │       ├── Controllers/      # Endpoints REST
 │       ├── Models/           # Entidades EF Core
 │       ├── Services/         # AuthService (JWT + BCrypt)
@@ -43,7 +43,7 @@ ToDo-Board/
 ### Backend
 
 ```bash
-cd backend/TodoBoard.Api
+cd backend/VTFlow.Api
 dotnet restore
 dotnet run
 # API em http://localhost:5253

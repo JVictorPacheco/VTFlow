@@ -10,7 +10,7 @@ created: 2026-08-10
 
 ## Propósito Principal
 
-O **ToDo-Board** é uma aplicação web de gestão de tarefas no estilo **Kanban Board**, permitindo que usuários organizem seu trabalho em quadros (boards), colunas personalizáveis e cards com subtarefas, comentários, etiquetas e log de atividades.
+O **VTFlow** é uma aplicação web de gestão de tarefas no estilo **Kanban Board**, permitindo que usuários organizem seu trabalho em quadros (boards), colunas personalizáveis e cards com subtarefas, comentários, etiquetas e log de atividades.
 
 ## Problemas que Resolve
 
@@ -68,7 +68,7 @@ O **ToDo-Board** é uma aplicação web de gestão de tarefas no estilo **Kanban
 
 ## Visão de Produto
 
-O ToDo-Board é um **MVP funcional** de um gerenciador Kanban pessoal. A UI é em português brasileiro (`lang="pt-BR"`), indicando foco no mercado lusófono.
+O VTFlow é um **MVP funcional** de um gerenciador Kanban pessoal. A UI é em português brasileiro (`lang="pt-BR"`), indicando foco no mercado lusófono.
 
 **Estágio atual**: Produto mínimo viável com todas as operações CRUD implementadas, autenticação funcional e UI responsiva com Tailwind CSS.
 
@@ -78,7 +78,7 @@ O ToDo-Board é um **MVP funcional** de um gerenciador Kanban pessoal. A UI é e
 |---|---|
 | **Runtime backend** | .NET 9.0 (ASP.NET Core Web API) |
 | **Runtime frontend** | Angular 21 (browser, SPA) |
-| **Banco de dados** | SQLite (`todo-board.db`, arquivo local) |
+| **Banco de dados** | SQLite (`VTFlow.db`, arquivo local) |
 | **Persistência frontend** | localStorage (token JWT, preferência de tema) |
 | **Porta backend (dev)** | HTTP:5253 / HTTPS:7135 |
 | **Porta frontend (dev)** | 4200 |
