@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CdkDragDrop, CdkDropList, CdkDrag, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, CdkDropList, CdkDrag, CdkDropListGroup } from '@angular/cdk/drag-drop';
 import { CardService, Card, Priority } from '../../core/services/card.service';
 import { Column } from '../../core/services/column.service';
 import { CardFormComponent } from './card-form.component';
@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CardFormComponent, CardDetailComponent, FormsModule, CdkDropList, CdkDrag],
+  imports: [CardFormComponent, CardDetailComponent, FormsModule, CdkDropList, CdkDrag, CdkDropListGroup],
   templateUrl: './board.component.html',
 })
 export class BoardComponent implements OnInit {
@@ -45,8 +45,7 @@ export class BoardComponent implements OnInit {
   confirmModal = signal<{ message: string; onConfirm: () => void } | null>(null);
   selectedCard = signal<Card | null>(null);
   private editingFromDetail = false;
-
-  connectedLists = computed(() => this.store.sortedColumns().map(c => `cdk-drop-list-${c.id}`));
+  private dragging = false;
 
   ngOnInit(): void {
     const boardId = +(this.route.snapshot.paramMap.get('id') ?? 0);
@@ -94,7 +93,11 @@ export class BoardComponent implements OnInit {
   onSaved(savedCard: Card): void {
     const reopenDetail = this.editingFromDetail;
     this.editingFromDetail = false;
-    this.store.updateCard(savedCard);
+    if (this.store.cards().find(c => c.id === savedCard.id)) {
+      this.store.updateCard(savedCard);
+    } else {
+      this.store.addCard(savedCard);
+    }
     this.closeForm();
     if (reopenDetail) {
       const merged = this.store.cards().find(c => c.id === savedCard.id);
@@ -118,6 +121,11 @@ export class BoardComponent implements OnInit {
     this.editingFromDetail = true;
     this.closeDetail();
     this.openEdit(card);
+  }
+
+  onDeleteFromDetail(card: Card): void {
+    this.closeDetail();
+    this.onDelete(card);
   }
 
   // CDK Drag & Drop
@@ -148,14 +156,17 @@ export class BoardComponent implements OnInit {
     }
 
     // Different column: move
-    this.store.moveCard(cardId, targetColumnId);
+    const sourceOrder = card.order;
+    const targetCards = this.store.cards().filter(c => c.columnId === targetColumnId);
+    const newOrder = targetCards.length > 0 ? Math.max(...targetCards.map(c => c.order)) + 1 : 0;
+    this.store.moveCard(cardId, targetColumnId, newOrder);
 
     this.cardService.move(cardId, targetColumnId).subscribe({
       next: () => {
         this.cardService.getAll().subscribe(freshCards => this.store.refreshCards(freshCards));
       },
       error: () => {
-        this.store.moveCard(cardId, sourceColumnId);
+        this.store.moveCard(cardId, sourceColumnId, sourceOrder);
         this.showToast('Erro ao mover card. Alteração revertida.');
       }
     });
@@ -182,7 +193,16 @@ export class BoardComponent implements OnInit {
   }
 
   openDetail(card: Card): void {
+    if (this.dragging) return;
     this.selectedCard.set(card);
+  }
+
+  onDragStarted(): void {
+    this.dragging = true;
+  }
+
+  onDragEnded(): void {
+    setTimeout(() => this.dragging = false, 0);
   }
 
   closeDetail(): void {

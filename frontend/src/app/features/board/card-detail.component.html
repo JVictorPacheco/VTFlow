@@ -118,7 +118,7 @@
               &#x270E; Editar
             </button>
             <select (change)="onMove($event)"
-              class="text-sm rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5">
+              class="text-sm rounded-lg border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 max-w-[150px] truncate">
               <option value="">Mover para...</option>
               @for (col of columns; track col.id) {
                 @if (col.id !== card.columnId) {

@@ -8,6 +8,8 @@ using TodoBoard.Api.Features.Columns;
 using TodoBoard.Api.Features.Labels;
 using TodoBoard.Api.Shared;
 
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();

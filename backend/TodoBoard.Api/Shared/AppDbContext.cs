@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using TodoBoard.Api.Features.Boards;
 using TodoBoard.Api.Features.Cards;
 using TodoBoard.Api.Features.Columns;
@@ -19,8 +20,35 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Comment> Comments => Set<Comment>();
     public DbSet<CardActivity> CardActivities => Set<CardActivity>();
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Username)
+            .IsUnique();
+
+        modelBuilder.Entity<Board>()
+            .HasOne(b => b.User)
+            .WithMany(u => u.Boards)
+            .HasForeignKey(b => b.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Column>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Columns)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Card>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.Cards)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         modelBuilder.Entity<CardLabel>()
             .HasKey(cl => new { cl.CardId, cl.LabelId });
 

@@ -20,5 +20,5 @@ public static class Register
                 return Results.Conflict(new { error });
 
             return Results.StatusCode(201);
-        }).AllowAnonymous();
+        }).AllowAnonymous().RequireRateLimiting("Auth");
 }

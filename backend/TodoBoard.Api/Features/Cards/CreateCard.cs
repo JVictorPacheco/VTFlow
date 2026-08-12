@@ -37,7 +37,7 @@ public static class CreateCard
             {
                 Title = request.Title.Trim(),
                 Description = request.Description,
-                DueDate = request.DueDate,
+                DueDate = request.DueDate.HasValue ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc) : null,
                 Priority = request.Priority,
                 ColumnId = request.ColumnId,
                 CreatedAt = DateTime.UtcNow,

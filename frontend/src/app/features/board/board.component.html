@@ -75,7 +75,7 @@
 
   <!-- Colunas com CDK Drag & Drop -->
   @if (!store.loading()) {
-    <div class="flex gap-4 p-6 overflow-x-auto min-h-[calc(100vh-65px)]">
+    <div class="flex gap-4 p-6 overflow-x-auto min-h-[calc(100vh-65px)]" cdkDropListGroup>
       @for (col of store.sortedColumns(); track col.id) {
         <div class="flex-shrink-0 w-72 bg-white dark:bg-gray-800 rounded-xl shadow flex flex-col">
           <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
@@ -88,18 +88,19 @@
           <div
             cdkDropList
             [cdkDropListData]="col.id"
-            [cdkDropListConnectedTo]="connectedLists()"
             (cdkDropListDropped)="onDropList($event)"
             class="flex-1 p-3 space-y-2 overflow-y-auto min-h-[60px]">
-            @for (card of cardsForColumn(col.id); track card.id) {
-              <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-600 cursor-pointer"
-                cdkDrag
-                [cdkDragData]="card.id"
-                (click)="openDetail(card)">
-                <div class="flex items-start gap-2 mb-2">
-                  <span class="mt-0.5 flex-shrink-0 w-2 h-2 rounded-full" [class]="priorityDot(card.priority)"></span>
-                  <span class="text-sm font-medium text-gray-900 dark:text-white leading-tight">{{ card.title }}</span>
-                </div>
+             @for (card of cardsForColumn(col.id); track card.id) {
+               <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-100 dark:border-gray-600 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"
+                 cdkDrag
+                 [cdkDragData]="card.id"
+                 (cdkDragStarted)="onDragStarted()"
+                 (cdkDragEnded)="onDragEnded()"
+                 (click)="openDetail(card)">
+                 <div class="flex items-start gap-2 mb-2">
+                   <span class="mt-0.5 flex-shrink-0 w-2 h-2 rounded-full" [class]="priorityDot(card.priority)"></span>
+                   <span class="text-sm font-medium text-gray-900 dark:text-white leading-tight">{{ card.title }}</span>
+                 </div>
                 @if (card.description) {
                   <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{{ card.description }}</p>
                 }
@@ -173,7 +174,7 @@
     [columns]="store.sortedColumns()"
     (closed)="closeDetail()"
     (edited)="onEditFromDetail($event)"
-    (deleted)="closeDetail(); onDelete(selectedCard()!)"
+    (deleted)="onDeleteFromDetail($event)"
     (moved)="onMoveFromDetail($event)"
     (cardUpdated)="onCardUpdated($event)"
   />

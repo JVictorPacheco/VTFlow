@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using TodoBoard.Api.Features.Boards;
+using TodoBoard.Api.Shared;
 
 namespace TodoBoard.Api.Features.Columns;
 
@@ -12,4 +13,5 @@ public class Column
     public int BoardId { get; set; }
     public Board Board { get; set; } = null!;
     public int? UserId { get; set; }
+    public User? User { get; set; }
 }

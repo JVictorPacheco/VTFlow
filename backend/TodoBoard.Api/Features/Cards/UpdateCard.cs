@@ -57,7 +57,7 @@ public static class UpdateCard
 
             card.Title = request.Title.Trim();
             card.Description = request.Description;
-            card.DueDate = request.DueDate;
+            card.DueDate = request.DueDate.HasValue ? DateTime.SpecifyKind(request.DueDate.Value, DateTimeKind.Utc) : null;
             card.Priority = request.Priority;
             card.ColumnId = request.ColumnId;
 
