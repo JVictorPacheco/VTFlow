@@ -84,4 +84,16 @@ describe('CardService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+
+  it('should POST duplicate card', () => {
+    const mockCopy = { id: 10, title: 'Card 1 (cópia)' };
+
+    service.duplicate(1).subscribe(copy => {
+      expect(copy).toEqual(mockCopy as never);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/cards/1/duplicate`);
+    expect(req.request.method).toBe('POST');
+    req.flush(mockCopy);
+  });
 });

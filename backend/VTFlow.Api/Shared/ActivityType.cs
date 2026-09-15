@@ -13,5 +13,6 @@ public enum ActivityType
     SubtaskRenamed,
     SubtaskDeleted,
     CommentAdded,
-    CommentDeleted
+    CommentDeleted,
+    CardDuplicated
 }

@@ -89,6 +89,7 @@ UpdateCard.Map(app);
 MoveCard.Map(app);
 ReorderCard.Map(app);
 DeleteCard.Map(app);
+DuplicateCard.Map(app);
 
 CreateSubtask.Map(app);
 GetSubtasks.Map(app);
