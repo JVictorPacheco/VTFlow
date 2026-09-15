@@ -22,6 +22,7 @@ export class CardDetailComponent implements OnInit, OnChanges {
   @Output() closed = new EventEmitter<void>();
   @Output() edited = new EventEmitter<Card>();
   @Output() deleted = new EventEmitter<Card>();
+  @Output() duplicated = new EventEmitter<Card>();
   @Output() moved = new EventEmitter<{ card: Card; columnId: number }>();
   @Output() cardUpdated = new EventEmitter<Card>();
 
@@ -190,6 +191,7 @@ export class CardDetailComponent implements OnInit, OnChanges {
 
   onEdit(): void { this.edited.emit(this.card); }
   onDelete(): void { this.deleted.emit(this.card); }
+  onDuplicate(): void { this.duplicated.emit(this.card); }
   onClose(): void { this.closed.emit(); }
   onMove(event: Event): void {
     const columnId = Number((event.target as HTMLSelectElement).value);

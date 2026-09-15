@@ -128,6 +128,16 @@ export class BoardComponent implements OnInit {
     this.onDelete(card);
   }
 
+  onDuplicateFromDetail(card: Card): void {
+    this.cardService.duplicate(card.id).subscribe({
+      next: copy => {
+        this.store.addCard(copy);
+        this.closeDetail();
+      },
+      error: () => this.showToast('Erro ao duplicar card.')
+    });
+  }
+
   // CDK Drag & Drop
   onDropList(event: CdkDragDrop<number>): void {
     const cardId = event.item.data as number;

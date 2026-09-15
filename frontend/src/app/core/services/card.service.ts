@@ -69,4 +69,8 @@ export class CardService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/${id}`);
   }
+
+  duplicate(id: number): Observable<Card> {
+    return this.http.post<Card>(`${this.url}/${id}/duplicate`, null);
+  }
 }
