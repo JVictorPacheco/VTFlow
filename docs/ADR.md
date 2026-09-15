@@ -8,7 +8,7 @@ created: 2026-08-11
 
 # Architecture Decision Records
 
-Registro das decisões arquiteturais do ToDo-Board, com contexto, alternativas consideradas e justificativa.
+Registro das decisões arquiteturais do VTFlow, com contexto, alternativas consideradas e justificativa.
 
 ---
 
@@ -145,7 +145,7 @@ Registro das decisões arquiteturais do ToDo-Board, com contexto, alternativas c
 **Decisão**: SQLite para desenvolvimento. Migrar para PostgreSQL antes de produção.
 
 **Justificativa**:
-- Zero configuração (arquivo `todo-board.db`)
+- Zero configuração (arquivo `VTFlow.db`)
 - Perfeito para desenvolvimento local e testes
 - EF Core abstrai a diferença — migration de provider é trivial
 

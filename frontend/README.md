@@ -8,7 +8,7 @@ tags:
 
 ## Objetivo do Módulo
 
-Single Page Application (SPA) Angular 21 que fornece a interface de usuário para o ToDo-Board, consumindo a API RESTful do backend.
+Single Page Application (SPA) Angular 21 que fornece a interface de usuário para o VTFlow, consumindo a API RESTful do backend.
 
 ## Responsabilidade Principal
 

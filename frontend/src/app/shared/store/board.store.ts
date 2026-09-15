@@ -75,8 +75,11 @@ export class BoardStore {
     this._cards.update(list => list.filter(c => c.id !== id));
   }
 
-  moveCard(cardId: number, targetColumnId: number): void {
-    this._cards.update(list => list.map(c => c.id === cardId ? { ...c, columnId: targetColumnId } : c));
+  moveCard(cardId: number, targetColumnId: number, newOrder?: number): void {
+    this._cards.update(list => list.map(c => c.id === cardId
+      ? { ...c, columnId: targetColumnId, ...(newOrder !== undefined ? { order: newOrder } : {}) }
+      : c
+    ));
   }
 
   reorderCards(cardId: number, newOrder: number): void {

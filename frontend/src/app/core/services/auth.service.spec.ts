@@ -49,13 +49,19 @@ describe('AuthService', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/boards']);
   });
 
-  it('should POST register and navigate', () => {
+  it('should POST register without navigating', () => {
     service.register('newuser', 'pass123').subscribe();
 
     const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
     expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ username: 'newuser', password: 'pass123' });
     req.flush(null, { status: 201, statusText: 'Created' });
 
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should navigate to login explicitly', () => {
+    service.navigateToLogin();
     expect(router.navigate).toHaveBeenCalledWith(['/login']);
   });
 

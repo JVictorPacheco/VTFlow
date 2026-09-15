@@ -12,6 +12,15 @@ created: 2026-08-10
 
 Roadmap organizado por milestones, do curto ao longo prazo, baseado na análise do código atual e nos riscos identificados na [[Arquitetura do Sistema]].
 
+## Status Atual (12/08/2026)
+
+- **Milestone 1 (Estabilização e Segurança)**: ✅ Concluído
+  - Índice único em `Users.Username`, FKs `UserId → Users`, CORS Dev/Production, rate limiting `/auth/*`, JWT via UserSecrets
+- **Milestone 2 (Qualidade e Testes)**: 🔄 Em andamento
+  - ✅ P6–P8: 14 testes backend (xUnit) + 30 testes frontend (Vitest) + testes de integração (WebApplicationFactory)
+  - ⬜ P9 (CI/CD) pendente
+- **Milestone 3–6**: ⬜ Não iniciados
+
 ---
 
 ## Milestone 1: Estabilização e Segurança (Curto Prazo)

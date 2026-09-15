@@ -8,7 +8,7 @@ tags:
 
 ## Objetivo do Módulo
 
-API RESTful que serve como fonte da verdade para toda a lógica de negócio, persistência e autenticação do ToDo-Board.
+API RESTful que serve como fonte da verdade para toda a lógica de negócio, persistência e autenticação do VTFlow.
 
 ## Responsabilidade Principal
 
@@ -22,9 +22,9 @@ API RESTful que serve como fonte da verdade para toda a lógica de negócio, per
 
 ```
 backend/
-└── TodoBoard.Api/
+└── VTFlow.Api/
     ├── Program.cs              # Entry point, DI, middleware pipeline
-    ├── TodoBoard.Api.csproj    # Dependências NuGet
+    ├── VTFlow.Api.csproj    # Dependências NuGet
     ├── appsettings.json        # Connection string, JWT config
     ├── Controllers/            # Endpoints REST (8 controllers)
     ├── Models/                 # Entidades de domínio (10 models + 1 enum)
